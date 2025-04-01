@@ -1,5 +1,7 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import "./App.css";
+import {pokeMaxId, totalQuizNumber, pokeImageUrl, pokeName, pokeId} from "./pokeData";
+import initialProcess from "./initialProcess";
 
 const App = () => {
   const [inputAnswer, setInputAnswer] = useState<string>(""); // プレイヤーの回答
@@ -12,6 +14,13 @@ const App = () => {
   const [finalResult, setFinalResult] = useState<boolean>(false); // 最終結果画面か
   const [nextQuiz, setNextQuiz] = useState<boolean>(false); // 次の問題にいくか
   const [playerNameError,setPlayerNameError] = useState<any>(""); // プレイヤー名入力エラー内容
+
+  useEffect(() => {
+    initialProcess();
+    console.log(pokeImageUrl);
+    console.log(pokeName);
+    console.log(pokeId);
+  }, []);
 
   /**
     * プレイヤー名入力バリデーションチェック
@@ -26,7 +35,7 @@ const App = () => {
   };
 
   /**
-    * ポケモンのAPIデータを取得し、問題を生成する処理を行う
+    * プレイヤー名のバリデーションチェックを行い、問題を開始する
     */
   const handleStartClick = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,45 +46,8 @@ const App = () => {
       return;
     };
 
-    for(let i = 0; i < totalQuizNumber; i++){
-        while(true){
-          const tmp: number = Math.floor(Math.random()*pokeMaxId) + 1;
-          if(!pokeId.includes(tmp)){
-            pokeId[i] = tmp;
-            break;
-          };
-        };
-
-      const fetchPokemonUrl = async () => {
-        const responseImage = await fetch("https://pokeapi.co/api/v2/pokemon/" + pokeId[i]);
-        const resultImage = await responseImage.json();
-        return resultImage;
-      };
-  
-      fetchPokemonUrl().then((resultImage)=>{
-        pokeImageUrl[i] = resultImage.sprites.front_default;
-      });
-  
-      const fetchPokemonName = async () => {
-        const responseName = await fetch("https://pokeapi.co/api/v2/pokemon-species/" + pokeId[i]);
-        const resultName = await responseName.json();
-        return resultName;
-      };
-  
-      fetchPokemonName().then((resultName)=>{
-        pokeName[i] = resultName.names[0].name;
-      });
-    };
-    
-    console.log(pokeImageUrl);
-    console.log(pokeName);
-    console.log(pokeId);
-
     setStartDisplay(false);
-    console.log(startDisplay);
-
     setNextQuiz(true);
-    console.log(nextQuiz);
   };
 
   /**
@@ -127,9 +99,9 @@ const App = () => {
 
   return (
     <div>
+      <h1>ポケモンクイズ</h1>
       {startDisplay ? (
         <div>
-          <h1>ポケモンクイズ</h1>
           <form onSubmit = {(e) => handleStartClick(e)}>
             <input
               type = "text"
@@ -144,7 +116,6 @@ const App = () => {
         </div>
       ) : nextQuiz ? (
         <div>
-          <h1>ポケモンクイズ</h1>
           <h2>{quizCount + 1 }問目</h2>
           <img 
             src = {pokeImageUrl[quizCount]}
@@ -179,17 +150,12 @@ const App = () => {
         </div>
       ):(
         <div>
+          <p>error</p>
         </div>
       )
       }
     </div>
   );
 };
-
-const pokeMaxId: number = 1025;
-const totalQuizNumber = 10;
-const pokeImageUrl:string[] = Array(totalQuizNumber);
-const pokeName:string[] = Array(totalQuizNumber);
-const pokeId:number[] = Array(totalQuizNumber);
 
 export default App;
