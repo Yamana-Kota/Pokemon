@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import "./App.css";
-import {pokeMaxId, totalQuizNumber, pokeImageUrl, pokeName, pokeId} from "./pokeData";
+import {totalQuizNumber, pokeImageUrl, pokeName, pokeId} from "./pokeData";
 import initialProcess from "./initialProcess";
 
 const App = () => {
@@ -57,7 +57,7 @@ const App = () => {
     e.preventDefault();
     console.log(inputAnswer);
 
-    if(inputAnswer == pokeName[quizCount]){
+    if(inputAnswer === pokeName[quizCount]){
       setFeedback("○");
       setScore((prevScore) => prevScore + 1);
     } else {
